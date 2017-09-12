@@ -4,7 +4,7 @@
   "description": "",
   "main": "server/server.js",
   "scripts": {
-      "start": "node ./server/server.js"
+    "start": "node ./server/server.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "dependencies": {
     "express": "^4.15.4",
     "express-ws": "^3.0.0",
+    "thor-io.client-vnext": "^1.0.6",
     "thor-io.vnext": "^1.4.4"
   },
   "devDependencies": {

@@ -4,9 +4,12 @@ let app = express();
  
 var thorio = require("thor-io.vnext").ThorIO;
 
+import {TestController} from '../server/controllers/TestController'
+
 var thorIO = new thorio.Engine(
     [
-    thorio.Controllers.BrokerController
+    thorio.Controllers.BrokerController,
+    TestController
     ]
 ); 
 
