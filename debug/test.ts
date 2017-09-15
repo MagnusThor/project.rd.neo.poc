@@ -96,7 +96,7 @@ export class TestApp{
                         let temperatue = {
                          temp: 1. + Math.random() * 10
                         };
-                        this.rdTestProxy.Publish("size",temperatue);
+                        this.rdTestProxy.Publish("publishTemperature",temperatue);
                     });
 
                     document.querySelector("#chat-message").addEventListener("keyup",

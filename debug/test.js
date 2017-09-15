@@ -59,7 +59,7 @@ var TestApp = /** @class */ (function () {
                 var temperatue = {
                     temp: 1. + Math.random() * 10
                 };
-                _this.rdTestProxy.Publish("size", temperatue);
+                _this.rdTestProxy.Publish("publishTemperature", temperatue);
             });
             document.querySelector("#chat-message").addEventListener("keyup", function (evt) {
                 var el = evt.target;
