@@ -25,16 +25,10 @@ var TestController = /** @class */ (function (_super) {
     function TestController(connection) {
         var _this = _super.call(this, connection) || this;
         _this.size = 0; // set size when connected to 0 as default
+        return _this;
         // for pub & sub
         // publish a value on the topic "tempChange",
         // pass a random temperatue...
-        setInterval(function () {
-            var temperatue = {
-                temp: 1. + Math.random() * 10
-            };
-            _this.publishToAll(temperatue, "tempChange");
-        }, 4000);
-        return _this;
     }
     TestController.prototype.invokeAndReturn = function (data) {
         // will back what sent to callee
@@ -43,6 +37,10 @@ var TestController = /** @class */ (function (_super) {
     TestController.prototype.invokeAndSendToAll = function (data) {
         // will send what callee passes to all clients connected to 'test' , see @ControllerProperties
         this.invokeToAll(data, "invokeAndSendToAll");
+        var temperatue = {
+            temp: 1. + Math.random() * 10
+        };
+        this.publishToAll(temperatue, "tempChange");
     };
     TestController.prototype.invokeAndSendOthers = function (data) {
         // will send what callee passes to all clients connected to 'test' except 'self' , see @ControllerProperties
