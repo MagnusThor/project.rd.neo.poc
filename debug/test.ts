@@ -6,6 +6,8 @@ export class TestApp{
 
         private rdTestProxy: ThorIOClient.Proxy;
 
+        private chatProxy: ThorIOClient.Proxy;
+
 
         private showData(data:any){
             let parent = document.querySelector("#debug") as HTMLDivElement;
@@ -20,17 +22,21 @@ export class TestApp{
             let serverUrl :string  = location.origin.replace(/^http/, 'ws');
            
         
-            this.factory = new ThorIOClient.Factory(serverUrl,["rdtest"]);
+            this.factory = new ThorIOClient.Factory(serverUrl,["rdtest","chat"]);
 
             // We got a connection to server 
-            this.factory.OnOpen = (a:ThorIOClient.Proxy) => {
+            this.factory.OnOpen = () => {
 
 
-                    this.rdTestProxy= a;
-
+                    this.rdTestProxy= this.factory.GetProxy("rdtest");
+                    console.log(this.rdTestProxy);
+                    this.chatProxy =  this.factory.GetProxy("chat");
+                    console.log(this.chatProxy);
                     // connect the Prox
 
                     this.rdTestProxy.Connect();
+
+                    this.chatProxy.Connect();
 
                     // When we got a connection ( proxy ) to the controller 
                     this.rdTestProxy.OnOpen = () => {
@@ -48,6 +54,7 @@ export class TestApp{
                     this.rdTestProxy.On("invokeAndSendOthers", (data:any) =>  { this.showData(data);});
                     this.rdTestProxy.On("invokeToExpr", (data:any) =>  { this.showData(data);});
 
+                    this.chatProxy.On("chatMessage", (data:any) => { this.showData(data)});
 
                     // add event listeners for the UI and Invokes...
 
@@ -84,6 +91,32 @@ export class TestApp{
                         this.rdTestProxy.SetProperty("size",11);
                     });
 
+                    document.querySelector("#btn-publishTemp").addEventListener("click", (e:any) => {
+                       
+                        let temperatue = {
+                         temp: 1. + Math.random() * 10
+                        };
+                        this.rdTestProxy.Publish("size",temperatue);
+                    });
+
+                    document.querySelector("#chat-message").addEventListener("keyup",
+                      
+                        (evt:KeyboardEvent) => {
+                            let el = evt.target as HTMLInputElement;
+
+                                    if(evt.keyCode === 13){
+
+                                        this.chatProxy.Invoke("sendChatMessage",
+                                        {
+                                            message: el.value
+                                        });
+
+                                        el.value = "";
+
+                                    }
+                        });
+
+                   
             };
 
         }

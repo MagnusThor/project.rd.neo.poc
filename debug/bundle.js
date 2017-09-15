@@ -75,12 +75,16 @@ var TestApp = /** @class */ (function () {
     function TestApp() {
         var _this = this;
         var serverUrl = location.origin.replace(/^http/, 'ws');
-        this.factory = new thor_io_client_vnext_1.ThorIOClient.Factory(serverUrl, ["rdtest"]);
+        this.factory = new thor_io_client_vnext_1.ThorIOClient.Factory(serverUrl, ["rdtest", "chat"]);
         // We got a connection to server 
-        this.factory.OnOpen = function (a) {
-            _this.rdTestProxy = a;
+        this.factory.OnOpen = function () {
+            _this.rdTestProxy = _this.factory.GetProxy("rdtest");
+            console.log(_this.rdTestProxy);
+            _this.chatProxy = _this.factory.GetProxy("chat");
+            console.log(_this.chatProxy);
             // connect the Prox
             _this.rdTestProxy.Connect();
+            _this.chatProxy.Connect();
             // When we got a connection ( proxy ) to the controller 
             _this.rdTestProxy.OnOpen = function () {
                 _this.rdTestProxy.Subscribe("tempChange", function (data) {
@@ -92,6 +96,7 @@ var TestApp = /** @class */ (function () {
             _this.rdTestProxy.On("invokeAndSendToAll", function (data) { _this.showData(data); });
             _this.rdTestProxy.On("invokeAndSendOthers", function (data) { _this.showData(data); });
             _this.rdTestProxy.On("invokeToExpr", function (data) { _this.showData(data); });
+            _this.chatProxy.On("chatMessage", function (data) { _this.showData(data); });
             // add event listeners for the UI and Invokes...
             document.querySelector("#btn-invoke").addEventListener("click", function (e) {
                 _this.rdTestProxy.Invoke("invokeAndReturn", {
@@ -119,6 +124,21 @@ var TestApp = /** @class */ (function () {
             });
             document.querySelector("#btn-setProperty").addEventListener("click", function (e) {
                 _this.rdTestProxy.SetProperty("size", 11);
+            });
+            document.querySelector("#btn-publishTemp").addEventListener("click", function (e) {
+                var temperatue = {
+                    temp: 1. + Math.random() * 10
+                };
+                _this.rdTestProxy.Publish("size", temperatue);
+            });
+            document.querySelector("#chat-message").addEventListener("keyup", function (evt) {
+                var el = evt.target;
+                if (evt.keyCode === 13) {
+                    _this.chatProxy.Invoke("sendChatMessage", {
+                        message: el.value
+                    });
+                    el.value = "";
+                }
             });
         };
     }

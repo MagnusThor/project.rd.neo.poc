@@ -12,14 +12,7 @@ export class TestController extends ThorIO.Controller {
     size: number;
     constructor(connection: ThorIO.Connection) {
         super(connection);
-        this.size = 0; // set size when connected to 0 as default
-        // for pub & sub
-
-        // publish a value on the topic "tempChange",
-        // pass a random temperatue...
-
-
-
+        this.size = 0; 
     }
 
     @CanInvoke(true)
@@ -32,12 +25,10 @@ export class TestController extends ThorIO.Controller {
     invokeAndSendToAll(data: any) {
         // will send what callee passes to all clients connected to 'test' , see @ControllerProperties
         this.invokeToAll(data, "invokeAndSendToAll");
+    }
 
-
-        let temperatue = {
-            temp: 1. + Math.random() * 10
-        };
-
+    @CanInvoke(true)
+    publishTemperature(temperatue:any){
         this.publishToAll(temperatue, "tempChange");
     }
 
