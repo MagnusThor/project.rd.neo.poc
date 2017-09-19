@@ -20,6 +20,8 @@ var TestApp = /** @class */ (function () {
                 _this.rdTestProxy.Subscribe("tempChange", function (data) {
                     _this.showData(data);
                 });
+                _this.chatProxy.Invoke("changeGroup", "lobby");
+                _this.chatProxy.Invoke("changeNickName", "Marlon Brando");
             };
             // set up listeners 
             _this.rdTestProxy.On("invokeAndReturn", function (data) { _this.showData(data); });

@@ -20,24 +20,55 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var thor_io_vnext_1 = require("thor-io.vnext");
-var ChatMessage = /** @class */ (function () {
-    function ChatMessage() {
+var MessageModel = /** @class */ (function () {
+    function MessageModel(message, sender) {
+        this.message = message;
+        this.sender = sender;
+        this.ts = new Date();
     }
-    return ChatMessage;
+    return MessageModel;
 }());
-exports.ChatMessage = ChatMessage;
+exports.MessageModel = MessageModel;
 var ChatController = /** @class */ (function (_super) {
     __extends(ChatController, _super);
     function ChatController(connection) {
-        return _super.call(this, connection) || this;
+        var _this = _super.call(this, connection) || this;
+        _this.group = "lobby";
+        return _this;
     }
+    ChatController.prototype.changeNickName = function (nickName) {
+        this.nickName = nickName;
+        this.invoke({ nickName: this.nickName }, "onNickNameChange");
+    };
+    ChatController.prototype.changeGroup = function (group) {
+        this.group = group;
+        this.invoke({ group: this.group }, "onGroupChange");
+    };
     ChatController.prototype.sendChatMessage = function (chatMessage) {
-        this.invokeToAll(chatMessage, "chatMessage", this.alias);
+        var _this = this;
+        var expr = function (pre) {
+            return pre.group === _this.group;
+        };
+        chatMessage.ts = new Date();
+        chatMessage.sender = this.nickName;
+        this.invokeTo(expr, chatMessage, "chatMessage", this.alias);
     };
     __decorate([
         thor_io_vnext_1.CanInvoke(true),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [ChatMessage]),
+        __metadata("design:paramtypes", [String]),
+        __metadata("design:returntype", void 0)
+    ], ChatController.prototype, "changeNickName", null);
+    __decorate([
+        thor_io_vnext_1.CanInvoke(true),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [String]),
+        __metadata("design:returntype", void 0)
+    ], ChatController.prototype, "changeGroup", null);
+    __decorate([
+        thor_io_vnext_1.CanInvoke(true),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [MessageModel]),
         __metadata("design:returntype", void 0)
     ], ChatController.prototype, "sendChatMessage", null);
     ChatController = __decorate([

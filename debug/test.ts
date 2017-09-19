@@ -44,7 +44,10 @@ export class TestApp{
                             this.rdTestProxy.Subscribe("tempChange", (data:any) =>{
                                 this.showData(data);
                             });
-                        
+
+                            this.chatProxy.Invoke("changeGroup","lobby");
+                            
+                            this.chatProxy.Invoke("changeNickName","Marlon Brando");
                     }
 
                     // set up listeners 
