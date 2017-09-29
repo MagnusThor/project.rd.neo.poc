@@ -6,15 +6,18 @@ var thorio = require("thor-io.vnext").ThorIO;
 
 import {TestController} from '../server/controllers/TestController'
 import {ChatController} from '../server/controllers/ChatController'
-
+import {RocketController} from '../server/controllers/RocketController'
 
 var thorIO = new thorio.Engine(
     [
     thorio.Controllers.BrokerController,
     TestController,
-    ChatController
+    ChatController,
+    RocketController
     ]
 ); 
+
+
 
 var expressWs = require("express-ws")(app);
 

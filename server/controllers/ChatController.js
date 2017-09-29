@@ -72,7 +72,7 @@ var ChatController = /** @class */ (function (_super) {
         __metadata("design:returntype", void 0)
     ], ChatController.prototype, "sendChatMessage", null);
     ChatController = __decorate([
-        thor_io_vnext_1.ControllerProperties("chat"),
+        thor_io_vnext_1.ControllerProperties("chat", false, 5000),
         __metadata("design:paramtypes", [thor_io_vnext_1.ThorIO.Connection])
     ], ChatController);
     return ChatController;

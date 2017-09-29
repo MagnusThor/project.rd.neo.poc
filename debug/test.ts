@@ -1,5 +1,71 @@
 import {ThorIOClient} from 'thor-io.client-vnext'
-export class TestApp{
+
+class Vector3 {
+    z: number;
+    y: number;
+    x: number;
+    constructor(x: number, y: number, z: number) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+    }
+    length(){
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);;
+    }
+
+    normalize(){
+        let lengthval = this.length();
+        
+                    if (lengthval != 0) {
+                        this.x /= lengthval;
+                        this.y /= lengthval;
+                        this.z /= lengthval;
+                        return true;
+                    } else {
+                        return false;
+                    }
+    }
+    angle(vectorB:Vector3){
+            var anorm = new Vector3(this.x, this.y, this.z);
+            anorm.normalize();
+            var bnorm = new Vector3(vectorB.x,vectorB.y,vectorB.z);
+            bnorm.normalize();
+            let dot = anorm.dot(bnorm);
+            return Math.acos(dot);
+    }
+
+    cross(vectorB:Vector3) {
+        var tempvec = new Vector3(this.x, this.y, this.z);
+        tempvec.x = (this.y * vectorB.z) - (this.z * vectorB.y);
+        tempvec.y = (this.z * vectorB.x) - (this.x * vectorB.z);
+        tempvec.z = (this.x * vectorB.y) - (this.y * vectorB.x);
+        this.x = tempvec.x;
+        this.y = tempvec.y;
+        this.z = tempvec.z;
+     
+    }
+
+    dot(b:Vector3){
+        return this.x * b.x + this.y * b.y + this.z * b.z;
+    }
+  
+}
+
+ interface INetworkMessageEvent{
+   
+}
+
+ class NetworkEventMessage<T> implements INetworkMessageEvent{
+        value: T;
+        ts: Number
+        constructor(data:T ){
+            this.value = data;
+            this.ts = performance.now();
+        }
+
+}
+
+export class TestApp {
 
 
         private factory : ThorIOClient.Factory;
@@ -7,6 +73,9 @@ export class TestApp{
         private rdTestProxy: ThorIOClient.Proxy;
 
         private chatProxy: ThorIOClient.Proxy;
+
+
+        private rocketController: ThorIOClient.Proxy;
 
 
         private showData(data:any){
@@ -22,22 +91,23 @@ export class TestApp{
             let serverUrl :string  = location.origin.replace(/^http/, 'ws');
            
         
-            this.factory = new ThorIOClient.Factory(serverUrl,["rdtest","chat"]);
+            this.factory = new ThorIOClient.Factory(serverUrl,["rdtest","rocketGame","chat"]);
 
             // We got a connection to server 
             this.factory.OnOpen = () => {
-
 
                     this.rdTestProxy= this.factory.GetProxy("rdtest");
                     console.log(this.rdTestProxy);
                     this.chatProxy =  this.factory.GetProxy("chat");
                     console.log(this.chatProxy);
+                    this.rocketController = this.factory.GetProxy("rocketGame");
+                
+                    console.log(this.rocketController);
+
+
                     // connect the Prox
 
-                    this.rdTestProxy.Connect();
-
-                    this.chatProxy.Connect();
-
+                    
                     // When we got a connection ( proxy ) to the controller 
                     this.rdTestProxy.OnOpen = () => {
 
@@ -50,6 +120,19 @@ export class TestApp{
                             this.chatProxy.Invoke("changeNickName","Marlon Brando");
                     }
 
+
+                 
+
+                    this.rocketController.OnOpen = () => {
+
+                        this.rocketController.On("onRocketMove", ( (move:NetworkEventMessage<Vector3> ) => {
+                            this.showData(move);
+                        }));
+
+                     
+                    };
+
+                
                     // set up listeners 
             
                     this.rdTestProxy.On("invokeAndReturn", (data:any) =>  { this.showData(data);});
@@ -102,6 +185,23 @@ export class TestApp{
                         this.rdTestProxy.Publish("publishTemperature",temperatue);
                     });
 
+
+                    document.querySelector("#btn-rocketmove").addEventListener("click",(e:any) => {
+
+                        setInterval( () => {
+                            
+                                                    
+                                                        let vec3 = new Vector3(Math.random(),Math.random(),Math.random());
+                            
+                                                        let msg = new NetworkEventMessage<Vector3>(vec3);
+                            
+                                                        this.rocketController.Invoke("moveRocket",msg)
+                            
+                            
+                                                    },100);
+                            
+                    });
+
                     document.querySelector("#chat-message").addEventListener("keyup",
                       
                         (evt:KeyboardEvent) => {
@@ -119,6 +219,17 @@ export class TestApp{
                                     }
                         });
 
+                        
+                        console.log("...connect");
+
+                        
+                   
+                    
+                        this.rdTestProxy.Connect();
+                        
+                        this.chatProxy.Connect();
+
+                        this.rocketController.Connect();
                    
             };
 

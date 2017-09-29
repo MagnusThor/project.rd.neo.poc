@@ -17,7 +17,7 @@ export class MessageModel{
         }
 }
 
-@ControllerProperties("chat")
+@ControllerProperties("chat",false,5000)
 export class ChatController extends ThorIO.Controller {
     private nickName:string;
     private group: string;
