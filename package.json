@@ -20,11 +20,10 @@
     "express": "^4.16.2",
     "express-ws": "^3.0.0",
     "thor-io.client-vnext": "^1.0.6",
-    "thor-io.vnext": "^1.4.6"
+    "thor-io.vnext": "^1.4.9"
   },
   "devDependencies": {
     "reflect-metadata": "^0.1.10",
-    "typings": "^2.1.1",
-    "webpack": "^3.7.1"
+    "webpack": "^3.10.0"
   }
 }
